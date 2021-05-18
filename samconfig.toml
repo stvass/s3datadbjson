@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "s3datadbjson"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-n7pah350h8v3"
+s3_prefix = "s3datadbjson"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
