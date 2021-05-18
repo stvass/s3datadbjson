@@ -1,36 +1,59 @@
-// const axios = require('axios')
-// const url = 'http://checkip.amazonaws.com/';
+'use strict';
+
+console.log('Loading function');
+
+var AWS = require('aws-sdk');
+var S3 = new AWS.S3({
+    maxRetries: 0,
+    region: 'us-east-1',
+});
+
+
 let response;
 
 /**
  *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
  *
- * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html 
- * @param {Object} context
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- * 
  */
-exports.lambdaHandler = async (event, context) => {
-    try {
-        // const ret = await axios(url);
 
-        console.info('Hello there Steve')
-        print('WHAT THE FUCK')
-        response = {
-            'statusCode': 200,
-            'body': JSON.stringify({
-                message: 'hello world',
-                // location: ret.data.trim()
-            })
-        }
+
+
+
+exports.lambdaHandler = async (event, context, callback) => {
+    try {
+        console.log('Received event:', JSON.stringify(event, null, 2));
+        console.log("Init complete, running.. \n")
+
+        var srcBucket = event.Records[0].s3.bucket.name;
+        var srcKey = event.Records[0].s3.object.key;
+
+        console.log("Params: srcBucket: " + srcBucket + " srcKey: " + srcKey + "\n")
+
+        console.log("Params: srcBucket: " + srcBucket + " srcKey: " + srcKey + "\n")
+
+        S3.getObject({
+            Bucket: srcBucket,
+            Key: srcKey,
+        }, function (err, data) {
+            if (err !== null) {
+                return callback(err, null);
+            }
+            var fileData = data.Body.toString('utf-8');
+
+
+            response = {
+                'statusCode': 200,
+                'body': JSON.stringify({
+                    message: 'hello world',
+                    // location: ret.data.trim()
+                })
+            }
+
+        }) 
     } catch (err) {
         console.log(err);
         return err;
     }
 
-    return response
+    return response;
 };
